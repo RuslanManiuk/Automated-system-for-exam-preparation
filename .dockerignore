@@ -1,0 +1,39 @@
+# Не включати в Docker image
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env
+.env.local
+.vscode
+.idea
+
+# Documentation
+*.md
+!README.md
+ARCHITECTURE.md
+DEPLOY*.md
+GITHUB_ISSUES_GUIDE.md
+WORKFLOW_VISUALIZATION.md
+team-*.ps1
+team-*.json
+PROJECT_TICKETS.md
+quick-start.ps1
+merge-tickets.ps1
+
+# Build artifacts (збираються в контейнері)
+dist
+dist-ssr
+build
+
+# Test files
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+__tests__
+coverage
+
+# Config files
+.prettierrc
+.eslintrc
