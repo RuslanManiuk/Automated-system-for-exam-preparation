@@ -49,16 +49,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Перевірка токена при завантаженні додатку
   useEffect(() => {
     const initAuth = async () => {
       const storedToken = localStorage.getItem("token");
       if (storedToken) {
         try {
           api.setAuthToken(storedToken);
-          const userData = await api.getProfile() as { _id?: string; id?: string; email: string; username: string; avatar?: string; stats: User['stats'] };
+          const userData = (await api.getProfile()) as {
+            _id?: string;
+            id?: string;
+            email: string;
+            username: string;
+            avatar?: string;
+            stats: User["stats"];
+          };
           setUser({
-            id: userData._id || userData.id || '',
+            id: userData._id || userData.id || "",
             email: userData.email,
             username: userData.username,
             avatar: userData.avatar,

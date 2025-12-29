@@ -19,7 +19,7 @@ export interface Flashcard {
   question: string;
   answer: string;
   status: "new" | "learning" | "mastered";
-  nextReview?: number; // timestamp
+  nextReview?: number;
 }
 
 export interface QuizQuestion {
@@ -37,7 +37,6 @@ export interface QuizResult {
   scorePercentage: number;
   feedback: string;
   recommendations: string[];
-  // Added for review mode
   userAnswers?: Record<string, string>;
   questions?: QuizQuestion[];
 }

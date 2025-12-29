@@ -8,13 +8,12 @@ const GOOGLE_CALLBACK_URL =
   process.env.GOOGLE_CALLBACK_URL ||
   "http://localhost:5000/api/auth/google/callback";
 
+/** Configures Passport.js strategies and serialization */
 export const configurePassport = () => {
-  // Serialize user для збереження в сесії
   passport.serializeUser((user: any, done) => {
     done(null, user._id);
   });
 
-  // Deserialize user з сесії
   passport.deserializeUser(async (id: string, done) => {
     try {
       const user = await User.findById(id);
@@ -24,7 +23,6 @@ export const configurePassport = () => {
     }
   });
 
-  // Google OAuth Strategy
   passport.use(
     new GoogleStrategy(
       {
@@ -35,20 +33,17 @@ export const configurePassport = () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          // Перевірка чи користувач вже існує
           let user = await User.findOne({ email: profile.emails?.[0].value });
 
           if (user) {
-            // Якщо користувач існує - оновлюємо його дані
             user.username = profile.displayName || user.username;
             user.avatar = profile.photos?.[0].value;
             await user.save();
           } else {
-            // Створюємо нового користувача
             user = new User({
               email: profile.emails?.[0].value,
               username: profile.displayName || "User",
-              password: Math.random().toString(36).substring(7), // Випадковий пароль для OAuth користувачів
+              password: Math.random().toString(36).substring(7),
               avatar: profile.photos?.[0].value,
               stats: {
                 xp: 0,

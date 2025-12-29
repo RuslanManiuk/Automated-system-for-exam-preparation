@@ -1,12 +1,6 @@
-# Docker Compose для розробки (development)
-# Використання: docker-compose -f docker-compose.dev.yml up
-
 version: "3.8"
 
 services:
-  # ============================================================
-  # MONGODB - База даних
-  # ============================================================
   mongodb:
     image: mongo:8.0
     container_name: examninja-mongodb-dev
@@ -22,9 +16,6 @@ services:
     networks:
       - examninja-dev-network
 
-  # ============================================================
-  # MONGO EXPRESS - Веб-інтерфейс
-  # ============================================================
   mongo-express:
     image: mongo-express:latest
     container_name: examninja-mongo-express-dev
@@ -42,9 +33,6 @@ services:
     networks:
       - examninja-dev-network
 
-  # ============================================================
-  # BACKEND - Development з hot reload
-  # ============================================================
   backend:
     build:
       context: ./server
@@ -68,13 +56,10 @@ services:
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
       MAX_FILE_SIZE: 10485760
     volumes:
-      # Hot reload - монтуємо вихідний код
       - ./server/src:/app/src:delegated
       - ./server/package.json:/app/package.json
       - ./server/tsconfig.json:/app/tsconfig.json
-      # Виключаємо node_modules (використовуємо з контейнера)
       - /app/node_modules
-      # Uploads та logs
       - ./server/uploads:/app/uploads
       - ./server/logs:/app/logs
     depends_on:
@@ -83,12 +68,9 @@ services:
       - examninja-dev-network
     command: npm run dev
 
-  # ============================================================
-  # FRONTEND - Development з hot reload
-  # ============================================================
   frontend:
     build:
-      context: .
+      context: ./client
       dockerfile: Dockerfile
       target: development
     container_name: examninja-frontend-dev
@@ -99,21 +81,19 @@ services:
       VITE_API_URL: http://localhost:5000/api
       NODE_ENV: development
     volumes:
-      # Hot reload - монтуємо вихідний код
-      - ./src:/app/src:delegated
-      - ./components:/app/components:delegated
-      - ./services:/app/services:delegated
-      - ./hooks:/app/hooks:delegated
-      - ./context:/app/context:delegated
-      - ./constants:/app/constants:delegated
-      - ./types.ts:/app/types.ts
-      - ./App.tsx:/app/App.tsx
-      - ./index.tsx:/app/index.tsx
-      - ./index.html:/app/index.html
-      - ./package.json:/app/package.json
-      - ./tsconfig.json:/app/tsconfig.json
-      - ./vite.config.ts:/app/vite.config.ts
-      # Виключаємо node_modules
+      - ./client/src:/app/src:delegated
+      - ./client/components:/app/components:delegated
+      - ./client/services:/app/services:delegated
+      - ./client/hooks:/app/hooks:delegated
+      - ./client/context:/app/context:delegated
+      - ./client/constants:/app/constants:delegated
+      - ./client/types.ts:/app/types.ts
+      - ./client/App.tsx:/app/App.tsx
+      - ./client/index.tsx:/app/index.tsx
+      - ./client/index.html:/app/index.html
+      - ./client/package.json:/app/package.json
+      - ./client/tsconfig.json:/app/tsconfig.json
+      - ./client/vite.config.ts:/app/vite.config.ts
       - /app/node_modules
     depends_on:
       - backend

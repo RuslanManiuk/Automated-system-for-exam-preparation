@@ -9,7 +9,6 @@ import cookieParser from "cookie-parser";
 import { connectDB } from "./config/database.js";
 import { configurePassport } from "./config/passport.js";
 
-// Import routes
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/users.js";
 import materialRoutes from "./routes/materials.js";
@@ -22,16 +21,15 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Trust proxy for production (needed for rate limiting behind reverse proxy)
 if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1);
 }
 
-// Simple in-memory rate limiter
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const RATE_LIMIT_MAX = 100; // 100 requests per minute
+const RATE_LIMIT_WINDOW = 60 * 1000;
+const RATE_LIMIT_MAX = 100;
 
+/** Simple in-memory rate limiter middleware */
 const rateLimiter = (
   req: express.Request,
   res: express.Response,
@@ -58,7 +56,6 @@ const rateLimiter = (
   next();
 };
 
-// Clean up rate limit store periodically
 setInterval(() => {
   const now = Date.now();
   for (const [ip, record] of rateLimitStore.entries()) {
@@ -68,7 +65,6 @@ setInterval(() => {
   }
 }, 60000);
 
-// Middleware
 app.use(rateLimiter);
 app.use(
   helmet({
@@ -98,7 +94,6 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(morgan("dev"));
 app.use(cookieParser());
 
-// Session configuration
 app.use(
   session({
     secret:
@@ -108,17 +103,15 @@ app.use(
     cookie: {
       secure: process.env.NODE_ENV === "production",
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      maxAge: 24 * 60 * 60 * 1000,
     },
   })
 );
 
-// Initialize Passport
 app.use(passport.initialize());
 app.use(passport.session());
 configurePassport();
 
-// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/materials", materialRoutes);
@@ -126,12 +119,10 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/quiz", quizRoutes);
 app.use("/api/openrouter", openrouterRoutes);
 
-// Health check
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", message: "Server is running" });
 });
 
-// Error handling middleware
 app.use(
   (
     err: any,
@@ -149,12 +140,11 @@ app.use(
   }
 );
 
-// 404 handler for API routes
 app.use((req, res) => {
   res.status(404).json({ error: "Маршрут не знайдено" });
 });
 
-// Start server
+/** Starts Express server and connects to MongoDB */
 const startServer = async () => {
   try {
     await connectDB();

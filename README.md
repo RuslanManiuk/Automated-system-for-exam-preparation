@@ -183,7 +183,9 @@ OPENROUTER_API_KEY=your_openrouter_api_key_here
 #### Frontend
 
 ```bash
+cd client
 npm install
+cd ..
 ```
 
 #### Backend
@@ -196,22 +198,29 @@ cd ..
 
 ### 4. Запуск проекту
 
-#### Опція А: Запуск всього одночасно (рекомендовано)
+#### Опція А: Запуск з Docker (рекомендовано)
 
 ```bash
-npm run dev:all
+# Development режим з hot reload
+docker-compose -f docker-compose.dev.yml up
+
+# Або production режим
+docker-compose up
 ```
 
 Це запустить:
 
-- Frontend на `http://localhost:3000`
+- Frontend на `http://localhost:5173`
 - Backend на `http://localhost:5000`
+- MongoDB на `localhost:27017`
+- Mongo Express на `http://localhost:8081`
 
 #### Опція Б: Окремий запуск
 
 **Frontend:**
 
 ```bash
+cd client
 npm run dev
 ```
 
@@ -224,25 +233,42 @@ npm run dev
 
 ### 5. Відкрийте браузер
 
-Перейдіть на `http://localhost:3000`
+Перейдіть на `http://localhost:5173`
 
-## 📦 Доступні команди
+## 📦 Доступні комани
 
-### Frontend
+### Frontend (client/)
 
 ```bash
+cd client
 npm run dev          # Запуск dev-сервера
-npm run dev:all      # Запуск frontend + backend одночасно
 npm run build        # Production збірка
 npm run preview      # Перегляд production збірки
 ```
 
-### Backend
+### Backend (server/)
 
 ```bash
+cd server
 npm run dev          # Запуск сервера з hot-reload (tsx watch)
 npm run build        # Компіляція TypeScript -> JavaScript
 npm run start        # Запуск скомпільованого сервера
+```
+
+### Docker
+
+```bash
+# Development режим
+docker-compose -f docker-compose.dev.yml up
+
+# Production режим
+docker-compose up --build
+
+# Переглянути логи
+docker-compose logs -f
+
+# Зупинити все
+docker-compose down
 ```
 
 ## 🗄️ База даних
@@ -354,4 +380,3 @@ npm test
 - `refactor:` - рефакторинг
 - `test:` - додавання тестів
 - `chore:` - оновлення залежностей, конфігурації
-

@@ -10,12 +10,11 @@ interface UploadRequest extends AuthRequest {
 }
 const router = express.Router();
 
-// Get all materials for current user
 router.get("/", authMiddleware, async (req: AuthRequest, res) => {
   try {
     const materials = await StudyMaterial.find({ userId: req.userId })
       .sort({ createdAt: -1 })
-      .select("-originalContent"); // Don't send full content in list
+      .select("-originalContent");
 
     res.json(materials);
   } catch (error) {
@@ -24,7 +23,6 @@ router.get("/", authMiddleware, async (req: AuthRequest, res) => {
   }
 });
 
-// Get single material
 router.get("/:id", authMiddleware, async (req: AuthRequest, res) => {
   try {
     const material = await StudyMaterial.findOne({
@@ -43,7 +41,6 @@ router.get("/:id", authMiddleware, async (req: AuthRequest, res) => {
   }
 });
 
-// File upload middleware (store in server/uploads)
 const uploadDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
@@ -52,14 +49,14 @@ const storage = multer.diskStorage({
   destination: function (
     req: express.Request,
     file: Express.Multer.File,
-    cb: (err: Error | null, destination: string) => void,
+    cb: (err: Error | null, destination: string) => void
   ) {
     cb(null, uploadDir);
   },
   filename: function (
     req: express.Request,
     file: Express.Multer.File,
-    cb: (err: Error | null, filename: string) => void,
+    cb: (err: Error | null, filename: string) => void
   ) {
     const unique = Date.now() + "-" + Math.random().toString(36).slice(2, 9);
     cb(null, `${unique}-${file.originalname.replace(/[^a-zA-Z0-9.-_]/g, "_")}`);
@@ -67,7 +64,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Create new material (supports optional file)
 router.post(
   "/",
   authMiddleware,
@@ -75,7 +71,6 @@ router.post(
   async (req: UploadRequest, res) => {
     try {
       let body = req.body || {};
-      // If body fields were sent as strings (from form-data), parse JSON fields
       try {
         if (typeof body.glossary === "string")
           body.glossary = JSON.parse(body.glossary);
@@ -85,9 +80,7 @@ router.post(
           body.mindMap = JSON.parse(body.mindMap);
         if (typeof body.flashcards === "string")
           body.flashcards = JSON.parse(body.flashcards);
-      } catch (e) {
-        // Ignore parse errors
-      }
+      } catch (e) {}
 
       const materialData: any = { ...body, userId: req.userId };
       if (req.file) {
@@ -107,7 +100,7 @@ router.post(
       console.error("Create material error:", error);
       res.status(500).json({ error: "Помилка створення матеріалу" });
     }
-  },
+  }
 );
 
 // Update material (e.g., flashcard progress)
@@ -165,7 +158,7 @@ router.patch(
       console.error("Update flashcard error:", error);
       res.status(500).json({ error: "Помилка оновлення картки" });
     }
-  },
+  }
 );
 
 // Delete material

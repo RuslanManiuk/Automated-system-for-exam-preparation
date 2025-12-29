@@ -11,7 +11,6 @@ import { authenticateToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// Register
 router.post(
   "/register",
   [
@@ -28,7 +27,6 @@ router.post(
     try {
       const { email, password, username } = req.body;
 
-      // Check if user exists
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res
@@ -36,10 +34,8 @@ router.post(
           .json({ error: "Користувач з таким email вже існує" });
       }
 
-      // Hash password
       const hashedPassword = await hashPassword(password);
 
-      // Create user
       const user = new User({
         email,
         password: hashedPassword,
@@ -56,7 +52,6 @@ router.post(
 
       await user.save();
 
-      // Generate token
       const token = generateToken(user._id.toString());
 
       res.status(201).json({
@@ -75,7 +70,6 @@ router.post(
   }
 );
 
-// Login
 router.post(
   "/login",
   [
@@ -86,19 +80,16 @@ router.post(
     try {
       const { email, password } = req.body;
 
-      // Find user
       const user = await User.findOne({ email });
       if (!user) {
         return res.status(401).json({ error: "Невірний email або пароль" });
       }
 
-      // Check password
       const isPasswordValid = await comparePassword(password, user.password);
       if (!isPasswordValid) {
         return res.status(401).json({ error: "Невірний email або пароль" });
       }
 
-      // Generate token
       const token = generateToken(user._id.toString());
 
       res.json({
@@ -118,7 +109,6 @@ router.post(
   }
 );
 
-// Get Profile (protected route)
 router.get("/profile", authenticateToken, async (req: any, res: Response) => {
   try {
     const user = await User.findById(req.userId).select("-password");
@@ -139,7 +129,6 @@ router.get("/profile", authenticateToken, async (req: any, res: Response) => {
   }
 });
 
-// Google OAuth - Redirect to Google
 router.get(
   "/google",
   passport.authenticate("google", {
@@ -148,7 +137,6 @@ router.get(
   })
 );
 
-// Google OAuth - Callback
 router.get(
   "/google/callback",
   passport.authenticate("google", {
@@ -160,7 +148,6 @@ router.get(
       const user = req.user;
       const token = generateToken(user._id.toString());
 
-      // Redirect to frontend with token (use root path for static site)
       const frontendURL = process.env.FRONTEND_URL || "http://localhost:3000";
       res.redirect(`${frontendURL}/?auth=callback&token=${token}`);
     } catch (error) {

@@ -13,6 +13,7 @@ export interface AuthRequest extends Request {
   user?: any;
 }
 
+/** Verifies JWT token and attaches userId to request */
 export const authMiddleware = (
   req: AuthRequest,
   res: Response,
@@ -22,12 +23,12 @@ export const authMiddleware = (
     if (!JWT_SECRET) {
       return res.status(500).json({ error: "Помилка конфігурації сервера" });
     }
-    
+
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({ error: "Токен не надано" });
     }
-    
+
     const token = authHeader.split(" ")[1];
 
     if (!token) {
@@ -48,5 +49,4 @@ export const authMiddleware = (
   }
 };
 
-// Alias для сумісності
 export const authenticateToken = authMiddleware;

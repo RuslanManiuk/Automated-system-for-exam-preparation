@@ -48,7 +48,7 @@ const flashcardSchema = new Schema(
     },
     nextReview: { type: Number },
   },
-  { _id: false },
+  { _id: false }
 );
 
 const mindMapNodeSchema = new Schema(
@@ -57,7 +57,7 @@ const mindMapNodeSchema = new Schema(
     label: { type: String, required: true },
     children: { type: Schema.Types.Mixed },
   },
-  { _id: false },
+  { _id: false }
 );
 
 const studyMaterialSchema = new Schema<IStudyMaterial>(
@@ -102,13 +102,12 @@ const studyMaterialSchema = new Schema<IStudyMaterial>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
-// Index for user's materials
 studyMaterialSchema.index({ userId: 1, createdAt: -1 });
 
 export const StudyMaterial = mongoose.model<IStudyMaterial>(
   "StudyMaterial",
-  studyMaterialSchema,
+  studyMaterialSchema
 );
