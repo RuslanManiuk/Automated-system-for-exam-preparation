@@ -1,0 +1,130 @@
+# Docker Compose для розробки (development)
+# Використання: docker-compose -f docker-compose.dev.yml up
+
+version: "3.8"
+
+services:
+  # ============================================================
+  # MONGODB - База даних
+  # ============================================================
+  mongodb:
+    image: mongo:8.0
+    container_name: examninja-mongodb-dev
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: devpassword123
+      MONGO_INITDB_DATABASE: examninja_dev
+    volumes:
+      - mongodb_dev_data:/data/db
+    networks:
+      - examninja-dev-network
+
+  # ============================================================
+  # MONGO EXPRESS - Веб-інтерфейс
+  # ============================================================
+  mongo-express:
+    image: mongo-express:latest
+    container_name: examninja-mongo-express-dev
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: devpassword123
+      ME_CONFIG_MONGODB_URL: mongodb://admin:devpassword123@mongodb:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+    depends_on:
+      - mongodb
+    networks:
+      - examninja-dev-network
+
+  # ============================================================
+  # BACKEND - Development з hot reload
+  # ============================================================
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+      target: development
+    container_name: examninja-backend-dev
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+      MONGODB_URI: mongodb://admin:devpassword123@mongodb:27017/examninja_dev?authSource=admin
+      JWT_SECRET: dev_jwt_secret_not_for_production
+      JWT_EXPIRE: 7d
+      SESSION_SECRET: dev_session_secret
+      CLIENT_URL: http://localhost:5173
+      ALLOWED_ORIGINS: http://localhost:5173,http://localhost:4173
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GROK_API_KEY: ${GROK_API_KEY}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      MAX_FILE_SIZE: 10485760
+    volumes:
+      # Hot reload - монтуємо вихідний код
+      - ./server/src:/app/src:delegated
+      - ./server/package.json:/app/package.json
+      - ./server/tsconfig.json:/app/tsconfig.json
+      # Виключаємо node_modules (використовуємо з контейнера)
+      - /app/node_modules
+      # Uploads та logs
+      - ./server/uploads:/app/uploads
+      - ./server/logs:/app/logs
+    depends_on:
+      - mongodb
+    networks:
+      - examninja-dev-network
+    command: npm run dev
+
+  # ============================================================
+  # FRONTEND - Development з hot reload
+  # ============================================================
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: examninja-frontend-dev
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:5000/api
+      NODE_ENV: development
+    volumes:
+      # Hot reload - монтуємо вихідний код
+      - ./src:/app/src:delegated
+      - ./components:/app/components:delegated
+      - ./services:/app/services:delegated
+      - ./hooks:/app/hooks:delegated
+      - ./context:/app/context:delegated
+      - ./constants:/app/constants:delegated
+      - ./types.ts:/app/types.ts
+      - ./App.tsx:/app/App.tsx
+      - ./index.tsx:/app/index.tsx
+      - ./index.html:/app/index.html
+      - ./package.json:/app/package.json
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./vite.config.ts:/app/vite.config.ts
+      # Виключаємо node_modules
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - examninja-dev-network
+    command: npm run dev -- --host 0.0.0.0
+
+volumes:
+  mongodb_dev_data:
+    driver: local
+
+networks:
+  examninja-dev-network:
+    driver: bridge
