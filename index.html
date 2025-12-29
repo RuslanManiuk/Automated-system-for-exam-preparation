@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="ExamNinja - Автоматизована система для підготовки до іспитів з використанням AI. Створюйте флеш-картки, тести та ментальні карти з ваших конспектів за секунди." />
+    <meta name="keywords" content="підготовка до іспитів, навчання, AI, флеш-картки, тести, ментальні карти, конспекти, студенти" />
+    <meta name="author" content="ExamNinja Team" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="ExamNinja - Розумна підготовка до іспитів" />
+    <meta property="og:description" content="Завантаж конспект — отримай тести, флеш-картки та ментальні карти за секунди. Твій AI-репетитор." />
+    <meta property="og:locale" content="uk_UA" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ExamNinja - Розумна підготовка до іспитів" />
+    <meta name="twitter:description" content="Завантаж конспект — отримай тести, флеш-картки та ментальні карти за секунди." />
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#4f46e5" />
+    
+    <title>ExamNinja - Розумна підготовка</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              heading: ["Outfit", "sans-serif"],
+            },
+            colors: {
+              primary: "#4f46e5",
+              primaryLight: "#818cf8",
+              secondary: "#db2777",
+              accent: "#7c3aed",
+              background: "#f1f5f9",
+              surface: "#ffffff",
+              // Dark mode colors
+              dark: {
+                bg: "#0f172a",
+                surface: "#1e293b",
+                border: "#334155",
+              }
+            },
+            animation: {
+              "spin-slow": "spin 3s linear infinite",
+              "bounce-slow": "bounce 3s infinite",
+              float: "float 6s ease-in-out infinite",
+              "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+              "gradient": "gradient 8s ease infinite",
+              "shimmer": "shimmer 2s infinite",
+              "scale-in": "scaleIn 0.2s ease-out",
+              "slide-up": "slideUp 0.3s ease-out",
+              "slide-down": "slideDown 0.3s ease-out",
+              "fade-in": "fadeIn 0.3s ease-out",
+              "bounce-in": "bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+            },
+            keyframes: {
+              float: {
+                "0%, 100%": { transform: "translateY(0)" },
+                "50%": { transform: "translateY(-10px)" },
+              },
+              gradient: {
+                "0%, 100%": { backgroundPosition: "0% 50%" },
+                "50%": { backgroundPosition: "100% 50%" },
+              },
+              shimmer: {
+                "0%": { transform: "translateX(-100%)" },
+                "100%": { transform: "translateX(100%)" },
+              },
+              scaleIn: {
+                "0%": { transform: "scale(0.95)", opacity: "0" },
+                "100%": { transform: "scale(1)", opacity: "1" },
+              },
+              slideUp: {
+                "0%": { transform: "translateY(10px)", opacity: "0" },
+                "100%": { transform: "translateY(0)", opacity: "1" },
+              },
+              slideDown: {
+                "0%": { transform: "translateY(-10px)", opacity: "0" },
+                "100%": { transform: "translateY(0)", opacity: "1" },
+              },
+              fadeIn: {
+                "0%": { opacity: "0" },
+                "100%": { opacity: "1" },
+              },
+              bounceIn: {
+                "0%": { transform: "scale(0.3)", opacity: "0" },
+                "50%": { transform: "scale(1.05)" },
+                "70%": { transform: "scale(0.9)" },
+                "100%": { transform: "scale(1)", opacity: "1" },
+              },
+            },
+            backgroundSize: {
+              "gradient-size": "200% 200%",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Custom scrollbar for webkit */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background: #475569;
+      }
+      .dark ::-webkit-scrollbar-thumb:hover {
+        background: #64748b;
+      }
+      .perspective {
+        perspective: 1000px;
+        perspective-origin: center center;
+      }
+      .backface-hidden {
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+      }
+      .rotate-y-180 {
+        transform: rotateY(180deg);
+      }
+      .preserve-3d {
+        transform-style: preserve-3d;
+        transform-origin: center center;
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
+      .dark .glass {
+        background: rgba(30, 41, 59, 0.8);
+        border: 1px solid rgba(51, 65, 85, 0.5);
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      /* Gradient text animation */
+      .gradient-text {
+        background: linear-gradient(90deg, #4f46e5, #7c3aed, #db2777, #4f46e5);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: gradient 3s linear infinite;
+      }
+      /* Card hover effects */
+      .card-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+      }
+      .dark .card-hover:hover {
+        box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.4);
+      }
+      /* Button press effect */
+      .btn-press:active {
+        transform: scale(0.97);
+      }
+      /* Glow effects */
+      .glow-primary {
+        box-shadow: 0 0 20px rgba(79, 70, 229, 0.3);
+      }
+      .dark .glow-primary {
+        box-shadow: 0 0 30px rgba(79, 70, 229, 0.4);
+      }
+      /* Focus ring */
+      .focus-ring:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #fff, 0 0 0 4px #4f46e5;
+      }
+      .dark .focus-ring:focus {
+        box-shadow: 0 0 0 2px #1e293b, 0 0 0 4px #818cf8;
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "react/": "https://aistudiocdn.com/react@^19.2.0/",
+          "react": "https://aistudiocdn.com/react@^19.2.0",
+          "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+          "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+          "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+          "pdfjs-dist": "https://esm.sh/pdfjs-dist@3.11.174",
+          "mammoth": "https://esm.sh/mammoth@1.6.0",
+          "jszip": "https://esm.sh/jszip@3.10.1"
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="/index.css" />
+  </head>
+  <body
+    class="bg-background text-slate-800 font-sans antialiased min-h-screen selection:bg-primary/20 selection:text-primary"
+  >
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
